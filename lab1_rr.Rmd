@@ -29,8 +29,6 @@ Find the top 5 highest observations of trees by legal status, do some wrangling,
 
 #DROP_NA - drop any NA values for a variable that you specify
 
-#SELECT - keep or exclude columns
-
 #RELOCATE - allws you to move things around, can specify by location, by class, etc.
 
 top_5_status <- sf_trees %>% 
@@ -39,6 +37,47 @@ top_5_status <- sf_trees %>%
   rename(tree_count = n) %>% 
   relocate(tree_count) %>% 
   slice_max(tree_count, n = 5)
+```
+
+Make a graph of those top 5 observations by legal status using ggplot
+```{r}
+#ggplot defaults to putting them in alphabetical order, you can convert to factor in the wrangling and then do factor reorder OR do it within ggplot FCT_REORDER(variable to reorder, variable to order by)
+
+ggplot(data = top_5_status, aes(x = fct_reorder(legal_status, tree_count), y = tree_count)) +
+  geom_col() +
+  labs(x = "Legal Status", y = "Tree Count") +
+  coord_flip() +
+  theme_minimal()
+```
+### A few more data wrangling refresher examples
+
+Only want to keep observations (rows) for Blackwood Acacia trees.
+
+```{r}
+#STR_DETECT - look within a variable that we specify and see if it shows up there
+#SELECT - keep or exclude columns
+blackwood_acacia <- sf_trees %>% 
+  filter(str_detect(species, "Blackwood Acacia")) %>% 
+  select(legal_status, date, latitude, longitude)
+
+ggplot(data = blackwood_acacia, aes(x = longitude, y = latitude)) +
+  geom_point()
+```
+### Use tidyr::seperate() and unite() functions
+
+Useful for combining or separating columns
+
+```{r}
+#SEPARATE(variable to seperate, into = c("column name", "column name), what is the separator)
+sf_trees_sep <- sf_trees %>% 
+  separate(species, into = c("spp_scientific", "spp_common"), sep = "::")
+```
+
+Example: tidyr::unite()
+```{r}
+#UNITE("new column name", column1 to unite:column2 unite, what do you wan tto be the separator)
+sf_trees_unit <- sf_trees %>% 
+  unite("id_status", tree_id:legal_status, sep = "_cool!_" )
 
 ```
 
