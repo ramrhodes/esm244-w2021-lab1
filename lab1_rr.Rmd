@@ -1,0 +1,44 @@
+---
+title: "ESM 244 Lab 1"
+author: "Rachel Rhodes"
+date: "1/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(sf)
+library(tmap)
+
+```
+
+### Read in SF trees data
+```{r}
+sf_trees <- read_csv(here("data", "sf_trees", "sf_trees.csv"))
+```
+
+### Basic wrangling reminders
+
+Refresh some skills for data wrangling & summary statistics using functions in the 'dplyr' package [also see help tab --> cheatsheets --> R markdown for formatting help]
+
+Find the top 5 highest observations of trees by legal status, do some wrangling, make a graph. Not all of these are necessary just to practice.
+```{r}
+#COUNT function recognizes groups (replayces need for group_by), it als finds counts (replaces n function), and puts in a nice table (replaces summarize) - can also have multiple leves of grouping example: count(legal_status, species)
+
+#DROP_NA - drop any NA values for a variable that you specify
+
+#SELECT - keep or exclude columns
+
+#RELOCATE - allws you to move things around, can specify by location, by class, etc.
+
+top_5_status <- sf_trees %>% 
+  count(legal_status) %>% 
+  drop_na(legal_status) %>% 
+  rename(tree_count = n) %>% 
+  relocate(tree_count) %>% 
+  slice_max(tree_count, n = 5)
+
+```
+
